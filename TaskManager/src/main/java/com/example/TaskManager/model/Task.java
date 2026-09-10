@@ -32,4 +32,5 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
+    // Additional setters can be added as needed
 }

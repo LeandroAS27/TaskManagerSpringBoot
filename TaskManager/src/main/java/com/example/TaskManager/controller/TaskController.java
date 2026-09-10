@@ -7,12 +7,14 @@ import com.example.TaskManager.service.TaskService;
 
 import java.util.List;
 import com.example.TaskManager.model.Task;
+import com.example.TaskManager.model.PostTaskRequest;
 import com.example.TaskManager.model.UpdateTaskRequest;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
@@ -45,12 +47,14 @@ public class TaskController {
        return TaskService.getTaskById(id);
     }
 
-    //faltou criar o post 
     @PostMapping("/tasks")
-    public String postMethodName(@RequestBody String entity) {
-        //TODO: process POST request
-        
-        return entity;
+    public ResponseEntity<Task> addTask(@RequestBody PostTaskRequest request) {
+        try {
+            Task task = TaskService.addTask(request.title(), request.description());
+            return ResponseEntity.status(HttpStatus.CREATED).body(task);
+        } catch (IllegalArgumentException e) {
+            return e.getMessage().contains("empty field") ? ResponseEntity.badRequest().build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); 
+        }
     }
     
 

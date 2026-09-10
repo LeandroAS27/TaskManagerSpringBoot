@@ -17,6 +17,19 @@ public class TaskService {
         return tasks;
     }
 
+    public Task addTask(String title, String description) {
+        long nextId = tasks.stream()
+                .mapToLong(task -> task.getId())
+                .max()
+                .orElse(0L) + 1;
+        if(title == null || title.isEmpty() || description == null || description.isEmpty()){
+            throw new IllegalArgumentException("There's a empty field in the request body. Please fill all fields and try again.");
+        }
+        Task task = new Task(nextId, title, description);
+        tasks.add(task);
+        return task;
+    }
+
     public List<Task> getTaskById(long id){
         return tasks.stream().filter(task -> task.getId() == id).toList();
     }

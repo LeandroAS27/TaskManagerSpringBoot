@@ -3,6 +3,8 @@ package com.example.TaskManager.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import com.example.TaskManager.Exception.TaskNotFoundException;
 import com.example.TaskManager.model.Task;
 import java.util.ArrayList;
 
@@ -13,8 +15,13 @@ public class TaskService {
     new Task(2L, "Task 2", "Description 2"), 
     new Task(3L, "Task 3", "Description 3")
     ));
+
     public List<Task> getTasks() {
-        return tasks;
+        try{
+            return tasks;
+        } catch (Exception e) {
+            throw new TaskNotFoundException("Error occurred while fetching tasks.");
+        }
     }
 
     public Task addTask(String title, String description) {
@@ -30,22 +37,25 @@ public class TaskService {
         return task;
     }
 
-    public List<Task> getTaskById(long id){
-        return tasks.stream().filter(task -> task.getId() == id).toList();
+    public Task getTaskById(long id){
+        return tasks.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with ID: " + id));
     }
 
     public String updateTaskById(long id, String description){
         return tasks.stream().filter(task -> task.getId() == id).findFirst().map(task -> {
             task.setDescription(description);
             return "Task updated successfully!";
-        }).orElse("Task not found!");
+        }).orElseThrow(() -> new TaskNotFoundException("Task not found with ID: " + id));
     }
 
     public String deleteTaskById(long id){
         return tasks.stream().filter(task -> task.getId() == id).findFirst().map(task -> {
             tasks.remove(task);
             return "Task deleted successfully!";
-        }).orElse("Task not found!");
+        }).orElseThrow(() -> new TaskNotFoundException("Task not found with ID: " + id));
     }
 
 }

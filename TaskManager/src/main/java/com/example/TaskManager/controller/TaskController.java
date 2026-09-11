@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
-
 @RestController
 public class TaskController {  
     
@@ -35,16 +34,14 @@ public class TaskController {
     
 
     @GetMapping("/tasks")
-    public List<Task> getTasks(){
-        return TaskService.getTasks();
+    public ResponseEntity<List<Task>> getTasks(){
+        return ResponseEntity.ok(TaskService.getTasks());
     }
 
     @GetMapping("/tasks/{id}")
-    public List<Task> getTaskById(@PathVariable Long id){
-       if(TaskService.getTaskById(id).isEmpty()){
-            return List.of(new Task(-1L, "Task not found", "Task not found"));
-       }
-       return TaskService.getTaskById(id);
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id){
+        Task task = TaskService.getTaskById(id);
+        return ResponseEntity.ok(task);
     }
 
     @PostMapping("/tasks")
@@ -74,7 +71,7 @@ public class TaskController {
         String result = TaskService.deleteTaskById(id);
 
         if (result.equals("Task not found!")) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.ok(result);
